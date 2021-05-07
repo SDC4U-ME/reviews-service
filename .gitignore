@@ -41,6 +41,12 @@ build/Release
 node_modules/
 jspm_packages/
 
+#config file
+config.js
+
+#data directory
+data/
+
 # TypeScript v1 declaration files
 typings/
 

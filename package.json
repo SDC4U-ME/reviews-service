@@ -1,0 +1,27 @@
+{
+  "name": "reviews-service",
+  "version": "1.0.0",
+  "description": "Systems Design Capstone for HR-SEA16 reviews service portion",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SDC4U-ME/reviews-service"
+  },
+  "author": "Jun Park",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/SDC4U-ME/reviews-service/issues"
+  },
+  "homepage": "https://github.com/SDC4U-ME/reviews-service#readme",
+  "dependencies": {
+    "eslint": "^7.25.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "express": "^4.17.1",
+    "nodemon": "^2.0.7",
+    "pg": "^8.6.0"
+  }
+}
