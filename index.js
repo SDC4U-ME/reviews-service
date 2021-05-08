@@ -1,28 +1,20 @@
 const express = require('express');
-const getReviews = require('./db/queries');
+const db = require('./db/db');
 
 const app = express();
 const port = 3000;
 
 app.use(express.json());
 
-app.get('/reviews', getReviews);
+app.get('/reviews', db.getReviews);
 
-app.get('/reviews/meta', (req, res) => {
-  console.log('server test');
-});
+app.get('/reviews/meta', db.getReviewsMeta);
 
-app.post('/reviews', (req, res) => {
-  console.log('server test');
-});
+app.post('/reviews', db.postReview);
 
-app.put('/reviews/:review_id/helpful', (req, res) => {
+app.put('/reviews/:review_id/helpful', db.markReviewHelpful);
 
-});
-
-app.put('/reviews/:review_id/helpful', (req, res) => {
-
-});
+app.put('/reviews/:review_id/report', db.reportReview);
 
 app.listen(port, () => {
   console.log(`App running on port ${port}.`);
