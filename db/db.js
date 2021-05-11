@@ -21,7 +21,7 @@ const getReviews = async (request, response) => {
           COALESCE((SELECT array_to_json(array_agg(row_to_json(p))) FROM
               (SELECT id, url FROM reviews_photos WHERE review_id = E.id)p
           ), '[]'::json) as photos
-          FROM reviews E WHERE product_id=${product_id} AND reported=false;`,
+          FROM reviews E WHERE (product_id=${product_id} AND reported = FALSE);`,
     );
     data.results = rows;
     response.status(200).send(data);
@@ -120,7 +120,7 @@ const reportReview = async (request, response) => {
   try {
     const report = await pool.query(
       `UPDATE reviews
-      SET reported = true
+      SET reported = TRUE
       WHERE id=${review_id};
       `,
     );
@@ -136,7 +136,7 @@ const markReviewHelpful = async (request, response) => {
   try {
     const helpful = await pool.query(
       `UPDATE reviews
-      SET helpfulness = (helpfulness+1)
+      SET helpfulness = (helpfulness + 1)
       WHERE id=${review_id};
       `,
     );
