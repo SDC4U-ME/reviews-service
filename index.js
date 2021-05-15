@@ -1,20 +1,19 @@
+const { Pool } = require('pg');
 const express = require('express');
-const db = require('./db/db');
+const config = require('./config');
+
+const pool = new Pool(config);
+module.exports = {
+  query: (text, params) => pool.query(text, params),
+};
+
+const router = require('./db');
 
 const app = express();
 const port = 3000;
 
 app.use(express.json());
-
-app.get('/reviews', db.getReviews);
-
-app.get('/reviews/meta', db.getReviewsMeta);
-
-app.post('/reviews', db.postReview);
-
-app.put('/reviews/:review_id/helpful', db.markReviewHelpful);
-
-app.put('/reviews/:review_id/report', db.reportReview);
+router(app);
 
 app.listen(port, () => {
   console.log(`App running on port ${port}.`);

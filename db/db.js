@@ -1,12 +1,12 @@
 /* eslint-disable camelcase */
-const { Pool } = require('pg');
-const config = require('../config');
+const Router = require('express-promise-router');
+const db = require('../index.js');
 
-const pool = new Pool(config);
+const router = new Router();
 
-pool.connect();
+module.exports = router;
 
-const getReviews = async (request, response) => {
+router.get('/reviews', async (request, response) => {
   const { product_id, page, count } = request.query;
   const data = {
     product: product_id,
@@ -15,7 +15,7 @@ const getReviews = async (request, response) => {
     results: [],
   };
   try {
-    const { rows } = await pool.query(
+    const { rows } = await db.query(
       `SELECT
           id AS review_id, rating, summary, recommend, response, body, date, reviewer_name, helpfulness,
           COALESCE((SELECT array_to_json(array_agg(row_to_json(p))) FROM
@@ -29,12 +29,12 @@ const getReviews = async (request, response) => {
     console.log(e);
     response.sendStatus(500);
   }
-};
+});
 
-const getReviewsMeta = async (request, response) => {
+router.get('/reviews/meta', async (request, response) => {
   const { product_id } = request.query;
   try {
-    const { rows } = await pool.query(
+    const { rows } = await db.query(
       `WITH rev_table AS (
       SELECT ID, rating, recommend
       FROM reviews
@@ -71,9 +71,9 @@ const getReviewsMeta = async (request, response) => {
     console.log(e);
     response.sendStatus(500);
   }
-};
+});
 
-const postReview = async (request, response) => {
+router.post('/reviews', async (request, response) => {
   const {
     product_id,
     rating,
@@ -96,7 +96,7 @@ const postReview = async (request, response) => {
     : '');
 
   try {
-    const { rows } = await pool.query(
+    const { rows } = await db.query(
       `WITH main_insert AS (
         INSERT INTO reviews (product_id, rating, summary, body, recommend, reviewer_name, reviewer_email )
         VALUES (${product_id}, ${rating}, '${summary}', '${body}', ${recommend}, '${name}', '${email}')
@@ -113,28 +113,12 @@ const postReview = async (request, response) => {
     console.log(e);
     response.sendStatus(500);
   }
-};
+});
 
-const reportReview = async (request, response) => {
+router.put('/reviews/:review_id/helpful', async (request, response) => {
   const { review_id } = request.params;
   try {
-    const report = await pool.query(
-      `UPDATE reviews
-      SET reported = TRUE
-      WHERE id=${review_id};
-      `,
-    );
-    response.status(204).send(report);
-  } catch (e) {
-    console.log(e);
-    response.sendStatus(500);
-  }
-};
-
-const markReviewHelpful = async (request, response) => {
-  const { review_id } = request.params;
-  try {
-    const helpful = await pool.query(
+    const helpful = await db.query(
       `UPDATE reviews
       SET helpfulness = (helpfulness + 1)
       WHERE id=${review_id};
@@ -145,8 +129,20 @@ const markReviewHelpful = async (request, response) => {
     console.log(e);
     response.sendStatus(500);
   }
-};
+});
 
-module.exports = {
-  getReviews, reportReview, markReviewHelpful, getReviewsMeta, postReview,
-};
+router.put('/reviews/:review_id/report', async (request, response) => {
+  const { review_id } = request.params;
+  try {
+    const report = await db.query(
+      `UPDATE reviews
+      SET reported = TRUE
+      WHERE id=${review_id};
+      `,
+    );
+    response.status(204).send(report);
+  } catch (e) {
+    console.log(e);
+    response.sendStatus(500);
+  }
+});
